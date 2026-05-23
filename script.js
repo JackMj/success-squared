@@ -170,21 +170,26 @@ consultForm.addEventListener('submit', async (e) => {
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
 
-  await new Promise(r => setTimeout(r, 1600));
+  try {
+    await emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', consultForm);
+    consultForm.style.display = 'none';
+    formSuccess.classList.add('show');
 
-  consultForm.style.display = 'none';
-  formSuccess.classList.add('show');
-
-  setTimeout(() => {
-    consultForm.reset();
-    consultForm.style.display = '';
-    formSuccess.classList.remove('show');
+    setTimeout(() => {
+      consultForm.reset();
+      consultForm.style.display = '';
+      formSuccess.classList.remove('show');
+      btn.disabled = false;
+      btn.innerHTML = orig;
+      selectedService.textContent = 'Will Drafting';
+      serviceField.value = 'Will Drafting';
+      consultTabs.forEach((t, i) => t.classList.toggle('consult__tab--active', i === 0));
+    }, 5000);
+  } catch (err) {
     btn.disabled = false;
     btn.innerHTML = orig;
-    selectedService.textContent = 'Will Drafting';
-    serviceField.value = 'Will Drafting';
-    consultTabs.forEach((t, i) => t.classList.toggle('consult__tab--active', i === 0));
-  }, 5000);
+    alert('Something went wrong. Please email us directly at info@successsquaredconsulting.com');
+  }
 });
 
 consultForm.querySelectorAll('input, textarea').forEach(f => {
